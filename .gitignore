@@ -1,3 +1,10 @@
+# DS store 
+.DS_Store
+
+# Idea 
+.idea
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
