@@ -1,0 +1,44 @@
+[{
+  "_id": "687b2ac08f9d88003f8f26e9",
+  "book_id": "687b2ac08f9d88003f8f26e6",
+  "chapter": "1",
+  "chapter_title": "Mengenali Sejarah",
+  "section": "1.1",
+  "section_title": "Pengertian Sejarah",
+  "subection": "Pengenalan",
+  "content": "Kita kerap mendengar ungkapan bahawa sejarah membawa banyak iktibar kepada kita.\nApakah yang dimaksudkan dengan sejarah? Bagaimanakah kita mengukur masa silam dalam\nsejarah? Bagaimanakah pula kita dapat mengetahui sejarah lampau sesebuah masyarakat\ndan negara? Apabila mengetahui sesuatu peristiwa masa lampau, mengapakah masih wujud\npelbagai tafsiran mengenainya? Semua persoalan ini akan terjawab dalam bab ini.",
+  "page_start": "1",
+},
+
+  {
+    "blocks": [
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Kaedah Lisan"
+    },
+    {
+      "type": "paragraph",
+      "text": "Kaedah lisan melibatkan komunikasi secara langsung..."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Kaedah Bertulis"
+    },
+    {
+      "type": "paragraph",
+      "text": "Kaedah bertulis melibatkan penggunaan teks..."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Kaedah Memerhati"
+    },
+    {
+      "type": "paragraph",
+      "text": "Kaedah ini melibatkan pemerhatian secara langsung..."
+    }
+  ]
+  }
+]

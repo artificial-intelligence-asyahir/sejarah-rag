@@ -15,5 +15,16 @@ def simple_pipeline() -> str:
     read_document()
     return read_text()
 
+
+@step
+def read_title():
+    return "syahir test";
+
+@step
+def read_text_from_file():
+    return "syahir test";
+
+
+
 if __name__ == "__main__":
     simple_pipeline()
