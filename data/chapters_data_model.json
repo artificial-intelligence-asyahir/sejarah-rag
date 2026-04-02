@@ -1,0 +1,13 @@
+[
+  {
+    "_id": "UUID",
+    "book_id": "687b2ac08f9d88003f8f26e6",
+    "chapter": 1,
+    "chapter_title": "Mengenali Sejarah"
+  }, {
+    "_id": "UUID",
+    "book_id": "687b2ac08f9d88003f8f26e6",
+    "chapter": 2,
+    "chapter_title": "Zaman Air Batu"
+  }
+]
