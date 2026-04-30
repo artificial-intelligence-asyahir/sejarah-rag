@@ -7,7 +7,7 @@ def read_text() -> str:
 
 @step
 def read_document():
-    text = pymupdf4llm.to_markdown("../textbook/SEJARAH_F2_copy.pdf")
+    text = pymupdf4llm.to_markdown("../data/sejarah_f1_example.pdf")
     print(text)
 
 @pipeline

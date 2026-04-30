@@ -7,7 +7,7 @@ from uuid import UUID
 class Book:
     id: UUID
     title: str
-    year: str
+    author: str
+    subject: str
     inserted_datetime: datetime
-    author: str = 'Kementerian Pendidikan Malaysia (KPM)'
 
