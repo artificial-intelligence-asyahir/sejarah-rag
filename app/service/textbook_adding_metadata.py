@@ -29,7 +29,5 @@ def adding_subject_metadata():
         })
         document.save(file_name, incremental=True, encryption=0)
 
-        print("saved file: " + file)
-
 if __name__ == "__main__":
     adding_subject_metadata()
