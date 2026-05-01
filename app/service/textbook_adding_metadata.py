@@ -1,6 +1,5 @@
 import pymupdf
 from pathlib import Path
-import data.book_chapters as chaps
 
 path_chapters = Path("../../chapters/")
 
