@@ -12,13 +12,12 @@ from app.model.section import Section
 
 logging.basicConfig(level=logging.INFO)
 
-def read_document(doc: pymupdf.Document | str = "../../data/SEJARAH_F1.pdf"):
+def read_document(doc: pymupdf.Document | str, book: Book):
     logging.info("Start reading document: %s", doc)
     pages = pymupdf4llm.to_markdown(doc=doc, page_chunks=true)
     document_non_chunk = pymupdf4llm.to_markdown(doc=doc)
     print(document_non_chunk)
 
-    book = Book(id = uuid.uuid4(), title="Sejarah Tingkatan 1", inserted_datetime=datetime.now())
     chapter = Chapter(id=uuid.uuid4(), book_id=book.id, chapter="1", chapter_title="Mengenali Sejarah", inserted_datetime=datetime.now())
 
     for page in pages:
@@ -26,9 +25,21 @@ def read_document(doc: pymupdf.Document | str = "../../data/SEJARAH_F1.pdf"):
 
     logging.info("Complete reading document: %s", doc)
 
+def test_document(document: pymupdf.Document):
+    print("begin writing")
+
+    # w:write b:binary
+    out = open("../../data/output.md", "wb")
+    doc = pymupdf4llm.to_markdown(document);
+    print("my buku sejarah")
+    print(doc)
+    out.write(doc.encode("utf-8"))
+    out.close()
+    print("writing completed")
+
 
 def get_book_metadata(document: pymupdf.Document) -> Book:
-    # logging.info("Start getting book metadata: %s", document)
+    logging.info("Start getting book metadata: %s", document)
 
     metadata = document.metadata
     book = Book(id=uuid.uuid4(),
@@ -37,10 +48,17 @@ def get_book_metadata(document: pymupdf.Document) -> Book:
                 subject=metadata["subject"],
                 inserted_datetime=datetime.now())
 
-    # logging.info("Complete getting book metadata: %s", book)
+    logging.info("Complete getting book metadata: %s", book)
     return book
+
+
+def get_toc(document: pymupdf.Document):
+    toc = document.get_toc()
+    print(toc)
 
 if __name__ == "__main__":
     document = pymupdf.open("../../textbooks/sejarah_tingkatan_1.pdf")
-    book = get_book_metadata(document)
-    read_document()
+    # book = get_book_metadata(document)
+    # test_document(document)
+    # read_document(document)
+    # get_toc(document)
