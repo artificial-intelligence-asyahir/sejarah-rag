@@ -49,7 +49,7 @@ def get_book_metadata(metadata: dict) -> Book:
     logging.info("Complete getting book metadata: %s", book)
     return book
 
-def get_chapter_metadata(metadata: dict, book_id: str, ) -> Chapter:
+def get_chapter_metadata(metadata: dict, book_id: str, summary: str) -> Chapter:
 
     subject = metadata["subject"]
 
@@ -68,20 +68,70 @@ def get_chapter_metadata(metadata: dict, book_id: str, ) -> Chapter:
                       book_id= book_id,
                       chapter = chapter_number,
                       title = chapter_title,
-                      summary = "")
+                      summary = summary)
 
     print(chapter)
     return chapter
 
-def get_toc(document: Document):
-    toc = document.get_toc()
-    print(toc)
+def get_kesimpulan(content: str) -> str:
+    kesimpulan = None
+
+    # .: any character - usually not included new line
+    # *: zero or more occurrences
+    # ?: zero or one occurrences
+    # +: one or more occurrences
+    # re.DOTALL: makes the 'dot' matches new line
+    match = re.search(r'(Kesimpulan.*?)(\*\*\d+\*\*)', content, re.DOTALL)
+    if match:
+        kesimpulan = match.group(1).strip()
+
+    if kesimpulan:
+        kesimpulan = __clean_text(kesimpulan)
+
+    return kesimpulan
+
+
+
+def __clean_text(text):
+    # Remove image artifact markers
+    text = re.sub(r'\*\*----- Start of picture text -----\*\*', '', text)
+    text = re.sub(r'\*\*----- End of picture text -----\*\*', '', text)
+    text = re.sub(r'\*\*==>.*?<==\*\*', '', text)
+
+    # Remove standalone single characters on their own
+    # text = re.sub(r'(?<!\w)\b[a-zA-Z]\b(?!\w)', '', text)
+
+    # Remove HTML line breaks
+    text = re.sub(r'<br>', ' ', text)
+
+    # Remove excessive blank lines (keep max 1)
+    text = re.sub(r'\n{3,}', '\n\n', text)
+
+    # Collapse multiple spaces into one
+    text = re.sub(r' {2,}', ' ', text)
+
+    # Remove coordinate-like OCR artifacts e.g. "0M10M  100M  1000M"
+    text = re.sub(r'(\d+M\s*)+', '', text)
+
+    # Remove garbled OCR lines (lines with mostly symbols/short noise)
+    text = re.sub(r'——+\w*', '', text)  # e.g. ——————EEe
+    text = re.sub(r'\b(eb|Te d|=\|)\b', '', text)  # stray fragments
+
+    # Strip leading/trailing whitespace
+    text = text.strip()
+
+    return text
 
 if __name__ == "__main__":
+    # document and content
     document = pymupdf.open("../../chapters/sejarah_tingkatan_1_bab_1_mengenali_sejarah.pdf")
+    content = pymupdf4llm.to_markdown(document)
     metadata = document.metadata
+
+    # book
     book = get_book_metadata(metadata)
-    chapter = get_chapter_metadata(metadata, book.id)
+    chapter = get_chapter_metadata(metadata, book.id, get_kesimpulan(content))
+
 
 
 
