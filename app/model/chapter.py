@@ -5,6 +5,6 @@ from uuid import UUID
 class Chapter:
     id: UUID
     book_id: UUID
-    chapter: str
+    chapter: int
     title: str
     summary: str
