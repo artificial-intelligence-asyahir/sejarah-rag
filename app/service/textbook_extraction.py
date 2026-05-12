@@ -3,41 +3,11 @@ import uuid
 import pymupdf
 import pymupdf4llm
 import re
-
-from sympy import true
 from app.model.book import Book
 from app.model.chapter import Chapter
 from app.model.section import Section
-from pymupdf import Document
-from datetime import datetime
 
 logging.basicConfig(level=logging.INFO)
-
-def read_document(doc: pymupdf.Document | str, book: Book):
-    logging.info("Start reading document: %s", doc)
-    pages = pymupdf4llm.to_markdown(doc=doc, page_chunks=true)
-    document_non_chunk = pymupdf4llm.to_markdown(doc=doc)
-    print(document_non_chunk)
-
-    chapter = Chapter(id=uuid.uuid4(), book_id=book.id, chapter="1", chapter_title="Mengenali Sejarah", inserted_datetime=datetime.now())
-
-    for page in pages:
-        section = Section(id=uuid.uuid4(), book_id=book.id, chapter_id=chapter.id)
-
-    logging.info("Complete reading document: %s", doc)
-
-def test_document(document: Document):
-    print("begin writing")
-
-    # w:write b:binary
-    out = open("../../data/output.md", "wb")
-    doc = pymupdf4llm.to_markdown(document);
-    print("my buku sejarah")
-    print(doc)
-    out.write(doc.encode("utf-8"))
-    out.close()
-    print("writing completed")
-
 
 def get_book_metadata(metadata: dict) -> Book:
     logging.info("Start getting book metadata: %s", document)
@@ -90,30 +60,8 @@ def get_kesimpulan(content: str) -> str:
 
     return kesimpulan
 
-def get_section(content: str):
-    # pattern = re.compile(r'(\*\*(\d+\.\d+)\s+([^\*]+)\*\*)', re.DOTALL)
-    pattern = re.compile(r'\*\*(\d+\.\d+)\**\s*\n?\s*(?:#{1,6}\s*)?\**\s*([^\*\n]+)\**(\n?)', re.DOTALL)
-    matches = list(pattern.finditer(content))
-    print(matches)
 
-    for i, match in enumerate(matches):
-        print(match.group(0))
-
-        content_start = match.end()
-
-        # Content ends at the start of the next heading (or end of file)
-        content_end = matches[i + 1].start() if i + 1 < len(matches) else len(content)
-
-        section_content = content[content_start:content_end].strip()
-        print(section_content)
-
-    # if match:
-    #     value1 = match.group(1)
-    #     value2 = match.group(2)
-    #     print (match.group(1))
-
-
-def parse_sections(text):
+def get_section(text: str, book_id: str, chapter_id: str):
     # Pattern to match section headers like 1.1, 1.2, 1.3
     # section_pattern = re.compile(r'(##\s*\*\*(\d+\.\d+)\s+(.*?)\*\*)', re.MULTILINE)
     section_pattern = re.compile(r'\*\*(\d+\.\d+)\**\s*\n?\s*(?:#{1,6}\s*)?\**\s*([^\*\n]+)\**', re.DOTALL)
@@ -122,8 +70,8 @@ def parse_sections(text):
     matches = list(section_pattern.finditer(text))
 
     for i, match in enumerate(matches):
-        section_num = match.group(2)
-        section_title = match.group(3).strip()
+        section_num = match.group(1)
+        section_title = match.group(2).strip()
 
         # Content starts after the header
         content_start = match.end()
@@ -136,11 +84,14 @@ def parse_sections(text):
         # Clean up excessive whitespace
         content = re.sub(r'\n{3,}', '\n\n', content)
 
-        sections.append({
-            "section": section_num,
-            "title": section_title,
-            "content": __clean_text(content)
-        })
+        section = Section(id=uuid.uuid4(),
+                          book_id=book_id,
+                          chapter_id=chapter_id,
+                          section=section_num,
+                          title=section_title,
+                          content=__clean_text(content))
+
+        sections.append(section)
 
     return sections
 
@@ -184,19 +135,6 @@ if __name__ == "__main__":
     # book
     book = get_book_metadata(metadata)
     chapter = get_chapter_metadata(metadata, book.id, get_kesimpulan(content))
-    section = get_section(content)
+    sections = get_section(content, book.id, chapter.id)
+    print("completed")
 
-    # sections = parse_sections(content)
-
-    # for section in sections:
-    #     print(f"Section: {section['section']}")
-    #     print(f"Title:   {section['title']}")
-    #     print(f"Content preview: {section['content']}")
-    #     print("-" * 60)
-
-
-
-
-    # test_document(document)
-    # read_document(document)
-    # get_toc(document)
