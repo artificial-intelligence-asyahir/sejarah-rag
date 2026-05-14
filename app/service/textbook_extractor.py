@@ -1,0 +1,109 @@
+import logging
+import uuid
+import re
+from app.model.book import Book
+from app.model.chapter import Chapter
+from app.model.section import Section
+
+class TextbookExtractor:
+    def __init__(self, metadata: dict, content: str):
+        self.metadata = metadata
+        self.content = content
+
+        self._book = None
+        self._chapter = None
+        self._sections = []
+
+    def get_book(self) -> Book:
+        logging.info("Start getting book metadata")
+        self._book = Book(
+            id=uuid.uuid4(),
+            title=self.metadata.get("title"),
+            author=self.metadata.get("author")
+        )
+        logging.info("Complete getting book metadata: %s", self._book)
+        return self._book
+
+    def get_chapter(self) -> Chapter:
+        subject = self.metadata.get("subject", "")
+        chapter_number, chapter_title = self._parse_subject(subject)
+
+        self._chapter = Chapter(
+            id=uuid.uuid4(),
+            book_id=self._book.id if self._book else None,
+            chapter=chapter_number,
+            title=chapter_title,
+            summary=self._get_kesimpulan()
+        )
+
+        return self._chapter
+
+    def get_sections(self) -> list[Section]:
+        section_pattern = re.compile(
+            r'\*\*(\d+\.\d+)\**\s*\n?\s*(?:#{1,6}\s*)?\**\s*([^\*\n]+)\**',
+            re.DOTALL
+        )
+        self._sections = []
+        matches = list(section_pattern.finditer(self.content))
+
+        for i, match in enumerate(matches):
+            section_num = match.group(1)
+            section_title = match.group(2).strip()
+
+            content_start = match.end()
+            content_end = matches[i + 1].start() if i + 1 < len(matches) else len(self.content)
+
+            raw_content = self.content[content_start:content_end].strip()
+
+            section = Section(
+                id=uuid.uuid4(),
+                book_id=self._book.id if self._book else None,
+                chapter_id=self._chapter.id if self._chapter else None,
+                section=section_num,
+                title=section_title,
+                content=self._clean_text(raw_content)
+            )
+            self._sections.append(section)
+        return self._sections
+
+    def _parse_subject(self, subject: str):
+        match = re.search(r'(\d+)\s+(.*)', subject)
+        if match:
+            return int(match.group(1)), match.group(2).strip()
+        return None, None
+
+    def _get_kesimpulan(self) -> str:
+        match = re.search(r'(Kesimpulan.*?)(\*\*\d+\*\*)', self.content, re.DOTALL)
+        if match:
+            return self._clean_text(match.group(1).strip())
+        return None
+
+    def _clean_text(self, text: str) -> str:
+        # Remove image artifact markers
+        text = re.sub(r'\*\*----- Start of picture text -----\*\*', '', text)
+        text = re.sub(r'\*\*----- End of picture text -----\*\*', '', text)
+        text = re.sub(r'\*\*==>.*?<==\*\*', '', text)
+
+        # Remove standalone single characters on their own
+        # text = re.sub(r'(?<!\w)\b[a-zA-Z]\b(?!\w)', '', text)
+
+        # Remove HTML line breaks
+        text = re.sub(r'<br>', ' ', text)
+
+        # Remove excessive blank lines (keep max 1)
+        text = re.sub(r'\n{3,}', '\n\n', text)
+
+        # Collapse multiple spaces into one
+        text = re.sub(r' {2,}', ' ', text)
+
+        # Remove coordinate-like OCR artifacts e.g. "0M10M  100M  1000M"
+        text = re.sub(r'(\d+M\s*)+', '', text)
+
+        # Remove garbled OCR lines (lines with mostly symbols/short noise)
+        text = re.sub(r'——+\w*', '', text)  # e.g. ——————EEe
+        text = re.sub(r'\b(eb|Te d|=\|)\b', '', text)  # stray fragments
+
+        # Strip leading/trailing whitespace
+        text = text.strip()
+
+        return text
