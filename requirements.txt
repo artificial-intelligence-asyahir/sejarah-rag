@@ -94,3 +94,4 @@ websockets==16.0
 yarl==1.23.0
 zenml==0.94.1
 zipp==3.23.0
+pymongo==4.10.1
