@@ -33,3 +33,15 @@ class TextbookRepository:
             section_dict["book_id"] = str(section_dict["book_id"]) if section_dict["book_id"] else None
             section_dict["chapter_id"] = str(section_dict["chapter_id"]) if section_dict["chapter_id"] else None
             self.sections.update_one({"id": section_dict["id"]}, {"$set": section_dict}, upsert=True)
+
+    def findBookByName(self, name: str):
+        return self.books.find_one({"title": name})
+
+    def findBookById(self, id: str):
+        return self.books.find_one({"id": id})
+
+    def findChapterByChapterAndBookId(self, chapter: int, book_id: str):
+        return self.chapters.find_one({"chapter": chapter, "book_id": book_id})
+
+    def findSectionsById(self, id: str):
+        return self.sections.find({"chapter_id": id})
