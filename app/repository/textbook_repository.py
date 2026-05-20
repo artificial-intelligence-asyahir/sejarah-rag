@@ -1,4 +1,7 @@
 import dataclasses
+
+from bson import ObjectId
+
 from app.model.book import Book
 from app.model.chapter import Chapter
 from app.model.section import Section
@@ -13,35 +16,43 @@ class TextbookRepository:
 
     def save_book(self, book: Book):
         book_dict = dataclasses.asdict(book)
-        book_dict["id"] = str(book_dict["id"])
-        self.books.update_one({"id": book_dict["id"]},
+        book_dict["_id"] = ObjectId(book_dict["_id"])
+        self.books.update_one({"_id": book_dict["_id"]},
                               {"$set": book_dict},
                               upsert=True)
 
     def save_chapter(self, chapter: Chapter):
         chapter_dict = dataclasses.asdict(chapter)
-        chapter_dict["id"] = str(chapter_dict["id"])
-        chapter_dict["book_id"] = str(chapter_dict["book_id"]) if chapter_dict["book_id"] else None
-        self.chapters.update_one({"id": chapter_dict["id"]},
+        chapter_dict["_id"] = ObjectId(chapter_dict["_id"])
+        chapter_dict["book_id"] = ObjectId(chapter_dict["book_id"]) if chapter_dict["book_id"] else None
+        self.chapters.update_one({"_id": chapter_dict["_id"]},
                                  {"$set": chapter_dict},
                                  upsert=True)
 
     def save_sections(self, sections: list[Section]):
         for section in sections:
             section_dict = dataclasses.asdict(section)
-            section_dict["id"] = str(section_dict["id"])
-            section_dict["book_id"] = str(section_dict["book_id"]) if section_dict["book_id"] else None
-            section_dict["chapter_id"] = str(section_dict["chapter_id"]) if section_dict["chapter_id"] else None
-            self.sections.update_one({"id": section_dict["id"]}, {"$set": section_dict}, upsert=True)
+            section_dict["_id"] = ObjectId(section_dict["_id"])
+            section_dict["book_id"] = ObjectId(section_dict["book_id"]) if section_dict["book_id"] else None
+            section_dict["chapter_id"] = ObjectId(section_dict["chapter_id"]) if section_dict["chapter_id"] else None
+            self.sections.update_one({"_id": section_dict["_id"]}, {"$set": section_dict}, upsert=True)
 
-    def findBookByName(self, name: str):
+    def find_book_by_title(self, name: str):
         return self.books.find_one({"title": name})
 
-    def findBookById(self, id: str):
-        return self.books.find_one({"id": id})
+    def find_book_by_id(self, id: str | ObjectId):
+        if isinstance(id, str):
+            id = ObjectId(id)
+        return self.books.find_one({"_id": id})
 
-    def findChapterByChapterAndBookId(self, chapter: int, book_id: str):
-        return self.chapters.find_one({"chapter": chapter, "book_id": book_id})
+    def find_chapter_by_chapter_no_and_book_id(self, chapter_no: int, book_id: str | ObjectId):
+        if isinstance(book_id, str):
+            book_id = ObjectId(book_id)
 
-    def findSectionsById(self, id: str):
-        return self.sections.find({"chapter_id": id})
+        return self.chapters.find_one({"chapter_no": chapter_no, "book_id": book_id})
+
+    def find_section_by_chapter_id_and_section_no(self, chapter_id: str | ObjectId, section: float):
+        if isinstance(chapter_id, str):
+            chapter_id = ObjectId(chapter_id)
+
+        return self.sections.find_one({"chapter_id": chapter_id, "section_no": section})
