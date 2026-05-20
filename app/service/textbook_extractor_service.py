@@ -1,5 +1,4 @@
 import logging
-import uuid
 import re
 from app.model.book import Book
 from app.model.chapter import Chapter
@@ -17,9 +16,8 @@ class TextbookExtractor:
     def get_book(self) -> Book:
         logging.info("Start getting book metadata")
         self._book = Book(
-            id=uuid.uuid4(),
-            title=self.metadata.get("title"),
-            author=self.metadata.get("author")
+            title=self.metadata.get("title", ""),
+            author=self.metadata.get("author", "")
         )
         logging.info("Complete getting book metadata: %s", self._book)
         return self._book
@@ -28,10 +26,12 @@ class TextbookExtractor:
         subject = self.metadata.get("subject", "")
         chapter_number, chapter_title = self._parse_subject(subject)
 
+        if not self._book:
+            raise ValueError("Book must be set before creating a chapter")
+
         self._chapter = Chapter(
-            id=uuid.uuid4(),
-            book_id=self._book.id if self._book else None,
-            chapter=chapter_number,
+            book_id=self._book._id,
+            chapter_no=chapter_number,
             title=chapter_title,
             summary=self._get_kesimpulan()
         )
@@ -55,11 +55,15 @@ class TextbookExtractor:
 
             raw_content = self.content[content_start:content_end].strip()
 
+            if not self._book:
+                raise ValueError("Book must be set before creating a section")
+            elif not self._chapter:
+                raise ValueError("Chapter must be set before creating a section")
+
             section = Section(
-                id=uuid.uuid4(),
-                book_id=self._book.id if self._book else None,
-                chapter_id=self._chapter.id if self._chapter else None,
-                section=section_num,
+                book_id=self._book._id,
+                chapter_id=self._chapter._id,
+                section_no=float(section_num),
                 title=section_title,
                 content=self._clean_text(raw_content)
             )

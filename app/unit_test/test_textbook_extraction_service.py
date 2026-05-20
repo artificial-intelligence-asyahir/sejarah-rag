@@ -1,15 +1,17 @@
 import pymupdf
 import pymupdf4llm
-from app.service.textbook_extractor import TextbookExtractor
+from app.service.textbook_extractor_service import TextbookExtractor
 import unittest
+
 
 class TestTextbookExtraction(unittest.TestCase):
     def test_textbook_extraction(self):
-        document = pymupdf.open("../../chapters/sejarah_tingkatan_1_bab_1_mengenali_sejarah.pdf")
+        document = pymupdf.open("chapters/sejarah_tingkatan_1_bab_1_mengenali_sejarah.pdf")
         content = pymupdf4llm.to_markdown(document)
+        
         metadata = document.metadata
 
-        textbook_ext = TextbookExtractor(metadata, content);
+        textbook_ext = TextbookExtractor(metadata, content)
         book = textbook_ext.get_book()
         self.assertIsNotNone(book)
 
