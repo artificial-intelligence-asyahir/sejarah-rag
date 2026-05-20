@@ -1,10 +1,11 @@
-from dataclasses import dataclass
-from uuid import UUID
+from dataclasses import dataclass, field
+
+from bson import ObjectId
 
 
 @dataclass
 class Book:
-    id: UUID
     title: str
     author: str
+    _id: ObjectId = field(default_factory=ObjectId)
 

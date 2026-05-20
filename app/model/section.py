@@ -1,12 +1,13 @@
-from dataclasses import dataclass
-from uuid import UUID
+from dataclasses import dataclass, field
+
+from bson import ObjectId
 
 
 @dataclass
 class Section:
-    id: UUID
-    book_id: UUID
-    chapter_id: UUID
-    section: str
+    book_id: ObjectId
+    chapter_id: ObjectId
+    section_no: float
     title: str
     content: str
+    _id: ObjectId = field(default_factory=ObjectId)
