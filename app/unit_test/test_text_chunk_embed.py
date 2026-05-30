@@ -1,7 +1,11 @@
+from uuid import uuid4
+
 from sentence_transformers import SentenceTransformer
 import unittest
 
+from app.model.chunk import Chunk
 from app.model.embeddings import EmbeddingModel
+from app.model.metadata import Metadata
 from app.model.section import Section
 from app.repository.textbook_repository import TextbookRepository
 from app.service.chunking import chunk_article, chunk_text
@@ -22,6 +26,10 @@ class TestTextChunkEmbed(unittest.TestCase):
         model = EmbeddingModel()
         embedding = model.encode(chunks1)
         print('Embedding: ', embedding.shape)
+
+        metadata = Metadata(book_id=section.book_id, chapter_id=section.chapter_id, section_id=section._id)
+        chunk = Chunk(metadata=metadata, id=uuid4(), vector=embedding)
+        print(chunk)
 
 
     def _find_section_from_unittest(self) -> Section:
