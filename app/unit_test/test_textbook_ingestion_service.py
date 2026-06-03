@@ -4,8 +4,8 @@ from app.service.textbook_ingestion_service import TextbookIngestionService
 import unittest
 
 
-class TestTextbookExtraction(unittest.TestCase):
-    def test_textbook_extraction(self):
+class TestTextbookIngestionService(unittest.TestCase):
+    def test_textbook_ingestion(self):
         document = pymupdf.open("chapters/sejarah_tingkatan_1_bab_1_mengenali_sejarah.pdf")
         content = pymupdf4llm.to_markdown(document)
         
