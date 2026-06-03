@@ -4,7 +4,7 @@ from app.model.book import Book
 from app.model.chapter import Chapter
 from app.model.section import Section
 
-class TextbookExtractor:
+class TextbookIngestionService:
     def __init__(self, metadata: dict, content: str):
         self.metadata = metadata
         self.content = content
