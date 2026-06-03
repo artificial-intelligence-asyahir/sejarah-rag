@@ -1,6 +1,6 @@
 import pymupdf
 import pymupdf4llm
-from app.service.textbook_extractor_service import TextbookExtractor
+from app.service.textbook_ingestion_service import TextbookIngestionService
 import unittest
 
 
@@ -11,7 +11,7 @@ class TestTextbookExtraction(unittest.TestCase):
         
         metadata = document.metadata
 
-        textbook_ext = TextbookExtractor(metadata, content)
+        textbook_ext = TextbookIngestionService(metadata, content)
         book = textbook_ext.get_book()
         self.assertIsNotNone(book)
 
