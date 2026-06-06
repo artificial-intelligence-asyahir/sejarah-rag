@@ -4,7 +4,7 @@ from bson import ObjectId
 
 
 @dataclass
-class Metadata:
+class Payload:
     book_id: ObjectId
     chapter_id: ObjectId
     section_id: ObjectId

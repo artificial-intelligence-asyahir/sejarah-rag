@@ -1,13 +1,12 @@
 from uuid import uuid4
 
-from sentence_transformers import SentenceTransformer
+from qdrant_client.http.models import PointStruct, Payload
 import unittest
 
-from app.model.chunk import Chunk
 from app.model.embeddings import EmbeddingModel
-from app.model.metadata import Metadata
 from app.model.section import Section
 from app.repository.textbook_repository import TextbookRepository
+from app.repository.vector_repository import VectorRepository
 from app.service.chunking import chunk_article, chunk_text
 
 
@@ -20,16 +19,20 @@ class TestTextChunkEmbed(unittest.TestCase):
         chunks1 = chunk_article(section.content, 1, 200)
         print(chunks1)
 
-        chunks2 = chunk_text(section.content)
-        print(chunks2)
-
         model = EmbeddingModel()
         embedding = model.encode(chunks1)
-        print('Embedding: ', embedding.shape)
+        embedding = embedding.tolist()
+        print(embedding[0])
 
-        metadata = Metadata(book_id=section.book_id, chapter_id=section.chapter_id, section_id=section._id)
-        chunk = Chunk(metadata=metadata, id=uuid4(), vector=embedding)
-        print(chunk)
+
+        payload = dict(book_id=str(section.book_id),
+                       chapter_id=str(section.chapter_id),
+                       section_id=str(section._id))
+
+        point = PointStruct(id=uuid4(), vector=embedding[0], payload=payload)
+        vector_repo = VectorRepository()
+        vector_repo.save_vector([point])
+        print("Completed")
 
 
     def _find_section_from_unittest(self) -> Section:
