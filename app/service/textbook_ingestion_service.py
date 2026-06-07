@@ -22,7 +22,10 @@ class TextbookIngestionService:
         logging.info("Complete getting book metadata: %s", self._book)
         return self._book
 
-    def get_chapter(self) -> Chapter:
+    def get_chapter(self, book: Book = None) -> Chapter:
+        if book:
+            self._book = book
+
         subject = self.metadata.get("subject", "")
         chapter_number, chapter_title = self._parse_subject(subject)
 
@@ -38,7 +41,12 @@ class TextbookIngestionService:
 
         return self._chapter
 
-    def get_sections(self) -> list[Section]:
+    def get_sections(self, book: Book = None, chapter: Chapter = None) -> list[Section]:
+        if book:
+            self._book = book
+        if chapter:
+            self._chapter = chapter
+
         section_pattern = re.compile(
             r'\*\*(\d+\.\d+)\**\s*\n?\s*(?:#{1,6}\s*)?\**\s*([^\*\n]+)\**',
             re.DOTALL
