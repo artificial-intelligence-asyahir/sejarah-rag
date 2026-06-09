@@ -47,16 +47,33 @@ class TextbookIngestionService:
         if chapter:
             self._chapter = chapter
 
+        # section_pattern = re.compile(
+        #     r'\*\*(\d+\.\d+)\**\s*\n?\s*(?:#{1,6}\s*)?\**\s*([^\*\n]+)\**',
+        #     re.DOTALL
+        # )
+
+        # section_pattern = re.compile(
+        #     r'(?:\*\*|#{1,6}\s*|>\s*)(\d+\.\d+)\**\s*\**\s*([^\*\n]+)',
+        #     re.DOTALL
+        # )
+
+        # section_pattern = re.compile(
+        #     r'(?:#{1,6}\s*|\*\*|>\s*)(?:[»\d\s]*)(\d+\.\d+)\s*([^\*\n]+)',
+        #     re.DOTALL
+        # )
+
         section_pattern = re.compile(
-            r'\*\*(\d+\.\d+)\**\s*\n?\s*(?:#{1,6}\s*)?\**\s*([^\*\n]+)\**',
+            r'\*\*(\d+\.\d+)\*\*\s*\n+\s*(?:#{1,6}\s*)?\*?\*?\s*([^\*\n]+)'
+            r'|(?:#{1,6}\s*|\*\*|>\s*)(?:[»\d\s]*)(\d+\.\d+)\s*([^\*\n]+)',
             re.DOTALL
         )
+
         self._sections = []
         matches = list(section_pattern.finditer(self.content))
 
         for i, match in enumerate(matches):
-            section_num = match.group(1)
-            section_title = match.group(2).strip()
+            section_num = match.group(1) or match.group(3)
+            section_title = (match.group(2) or match.group(4) or '').strip()
 
             content_start = match.end()
             content_end = matches[i + 1].start() if i + 1 < len(matches) else len(self.content)
@@ -85,7 +102,7 @@ class TextbookIngestionService:
         return None, None
 
     def _get_kesimpulan(self) -> str:
-        match = re.search(r'(Kesimpulan.*?)(\*\*\d+\*\*)', self.content, re.DOTALL)
+        match = re.search(r'((?:Kesimpulan|Sinopsis).*?)(\*\*\d+\*\*)', self.content, re.DOTALL)
         if match:
             return self._clean_text(match.group(1).strip())
         return None

@@ -10,7 +10,7 @@ from app.model.chapter import Chapter
 @step
 def step_1_open_document(filepath: str) -> TextbookIngestionService:
     document = pymupdf.open(filepath)
-    content = pymupdf4llm.to_markdown(document)
+    content = pymupdf4llm.to_markdown(doc=document)
     metadata = document.metadata
     textbook_ingestion_svc = TextbookIngestionService(metadata, content)
     log_metadata(metadata={"filename": filepath})

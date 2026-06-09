@@ -11,14 +11,14 @@ path = Path("/Users/syahirghariff/Developer/2026/sejarah-rag/chapters")
 processed_path = Path("/Users/syahirghariff/Developer/2026/sejarah-rag/processed")
 
 
-@pipeline
+@pipeline(enable_cache=False)
 def textbook_ingestion_pipeline(filepath: str):
     txtbook_ingest_svc = step_1_open_document(filepath)
     book = step_2_get_book(txtbook_ingest_svc)
-    save_book(book)
+    book = save_book(book)
 
     chapter = step_3_get_chapter(txtbook_ingest_svc, book)
-    save_chapter(chapter)
+    chapter = save_chapter(chapter)
 
     sections = step_4_get_sections(txtbook_ingest_svc, book, chapter)
     save_sections(sections)

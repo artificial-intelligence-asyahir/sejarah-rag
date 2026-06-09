@@ -1,7 +1,7 @@
 import pymupdf
 from pathlib import Path
 
-path_chapters = Path("../../chapters/")
+path_chapters = Path("../../pending/")
 
 def adding_metadata():
     document = pymupdf.open("../../chapters/sejarah_tingkatan_1_bab_1_mengenali_sejarah.pdf")
