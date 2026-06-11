@@ -4,6 +4,7 @@ from bson import ObjectId
 
 from app.model.book import Book
 from app.model.chapter import Chapter
+from app.model.chunk import Chunk
 from app.model.section import Section
 from app.repository.mongodb import connection, DATABASE_NAME
 
@@ -13,6 +14,7 @@ class TextbookRepository:
         self.books = self.db['books']
         self.chapters = self.db['chapters']
         self.sections = self.db['sections']
+        self.chunks = self.db['chunks']
 
     def save_book(self, book: Book):
         book_dict = dataclasses.asdict(book)
@@ -67,3 +69,10 @@ class TextbookRepository:
 
     def find_all_sections_v2(self) -> list[dict]:
         return list(self.sections.find())
+
+    def save_chunk(self, chunk: Chunk):
+        chunk_dict = dataclasses.asdict(chunk)
+        chunk_dict["_id"] = ObjectId()
+        self.chunks.update_one({"_id": chunk_dict["_id"]},
+                                 {"$set": chunk_dict},
+                                 upsert=True)

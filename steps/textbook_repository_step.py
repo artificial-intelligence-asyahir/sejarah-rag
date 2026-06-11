@@ -3,6 +3,7 @@ from zenml import step, log_metadata
 
 from app.model.book import Book
 from app.model.chapter import Chapter
+from app.model.chunk import Chunk
 from app.model.section import Section
 from app.repository.textbook_repository import TextbookRepository
 from app.repository.vector_repository import VectorRepository
@@ -73,4 +74,12 @@ def save_vector_embedding(points: list[PointStruct]):
     vector_repo.save_vector(points)
     metadata = {"vector_count": str(len(points))}
     log_metadata(metadata=metadata)
+
+
+@step
+def save_chunking(chunk: Chunk):
+    textbook_repo.save_chunk(chunk)
+    metadata = {"chunk_count": str(len(chunk.contents))}
+    log_metadata(metadata=metadata)
+
 
