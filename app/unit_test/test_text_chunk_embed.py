@@ -7,7 +7,7 @@ from app.model.embeddings import EmbeddingModel
 from app.model.section import Section
 from app.repository.textbook_repository import TextbookRepository
 from app.repository.vector_repository import VectorRepository
-from app.service.chunking import chunk_article, chunk_text
+from app.service.chunking_service import chunk_article, chunk_text
 
 
 class TestTextChunkEmbed(unittest.TestCase):

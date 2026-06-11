@@ -61,3 +61,9 @@ class TextbookRepository:
         if isinstance(id, str):
             id = ObjectId(id)
         return self.sections.find_one({"_id": id})
+
+    def find_all_sections(self) -> list[Section]:
+        return [Section(**sec) for sec in self.sections.find()]
+
+    def find_all_sections_v2(self) -> list[dict]:
+        return list(self.sections.find())

@@ -3,7 +3,7 @@ import pymupdf
 import pymupdf4llm
 
 from app.model.embeddings import EmbeddingModel
-from app.service.chunking import chunk_article
+from app.service.chunking_service import chunk_article
 from app.service.textbook_ingestion_service import TextbookIngestionService
 
 

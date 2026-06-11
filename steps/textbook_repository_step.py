@@ -1,9 +1,11 @@
+from qdrant_client.http.models import PointStruct
 from zenml import step, log_metadata
 
 from app.model.book import Book
 from app.model.chapter import Chapter
 from app.model.section import Section
 from app.repository.textbook_repository import TextbookRepository
+from app.repository.vector_repository import VectorRepository
 
 textbook_repo = TextbookRepository()
 
@@ -49,5 +51,26 @@ def save_sections(sections: list[Section]):
     for i, sect in enumerate(sections):
         metadata[f"section_{i}_id"] = str(sect._id)
 
+    log_metadata(metadata=metadata)
+
+
+def load_all_sections() -> list[dict]:
+    sections = textbook_repo.find_all_sections_v2()
+    for section in sections:
+        section['_id'] = str(section['_id'])
+        section['book_id'] = str(section['book_id'])
+        section['chapter_id'] = str(section['chapter_id'])
+
+    # metadata = {}
+    # for i, sect in enumerate(sections):
+    #     metadata[f"section_{i}_title"] = str(sect.title)
+
+    return sections
+
+@step
+def save_vector_embedding(points: list[PointStruct]):
+    vector_repo = VectorRepository()
+    vector_repo.save_vector(points)
+    metadata = {"vector_count": str(len(points))}
     log_metadata(metadata=metadata)
 
