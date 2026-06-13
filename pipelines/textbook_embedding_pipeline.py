@@ -19,4 +19,4 @@ if __name__ == '__main__':
     sections = load_all_sections()
     for sec in sections:
         textbook_embedding_pipeline(sec)
-        time.sleep(5)
+        # time.sleep(5)
