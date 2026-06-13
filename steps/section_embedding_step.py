@@ -26,15 +26,20 @@ def section_chunking(section: dict) -> Chunk:
 @step
 def section_embedding_step(chunk: Chunk) -> list[PointStruct]:
 
-    # chunks = chunk_article(section['content'], 50, 500)
-    #
-    # payload = dict(book_id=str(section['book_id']),
-    #                chapter_id=str(section['chapter_id']),
-    #                section_id=str(section['_id']))
+    model = EmbeddingModel()
+    embeddings = model.encode(chunk.contents).tolist()
 
-    embeddings = EmbeddingModel().encode(chunk.contents).tolist()
-
-    points = [PointStruct(id=uuid4(), vector=embedding, payload=chunk.payload) for i, embedding in enumerate(embeddings)]
+    points = [
+        PointStruct(
+            id=str(uuid4()),
+            vector=embeddings[i],
+            payload={
+                **chunk.payload,
+                "text": chunk.contents[i]
+            }
+        )
+        for i in range(len(chunk.contents))
+    ]
 
     metadata = {"book_id": chunk.payload['book_id'],
                 "chapter_id": chunk.payload['chapter_id'],
