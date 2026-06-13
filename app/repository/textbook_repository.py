@@ -59,6 +59,11 @@ class TextbookRepository:
 
         return self.sections.find_one({"chapter_id": chapter_id, "section_no": section})
 
+    def find_chapter_by_id(self, id: str | ObjectId):
+        if isinstance(id, str):
+            id = ObjectId(id)
+        return self.chapters.find_one({"_id": id})
+
     def find_section_by_id(self, id: str | ObjectId):
         if isinstance(id, str):
             id = ObjectId(id)

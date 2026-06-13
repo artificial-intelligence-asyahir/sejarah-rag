@@ -16,7 +16,7 @@ class VectorRepository:
 
     def search_vector(self, query: list[float]):
         return self.client.query_points(collection_name=COLLECTION_NAME,
-                                        points=query,
+                                        query=query,
                                         with_payload=True,
-                                        limit=10)
+                                        limit=5)
 
