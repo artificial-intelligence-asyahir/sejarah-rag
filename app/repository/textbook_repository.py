@@ -15,6 +15,7 @@ class TextbookRepository:
         self.chapters = self.db['chapters']
         self.sections = self.db['sections']
         self.chunks = self.db['chunks']
+        self.evaluations = self.db['evaluations']
 
     def save_book(self, book: Book):
         book_dict = dataclasses.asdict(book)
@@ -81,3 +82,6 @@ class TextbookRepository:
         self.chunks.update_one({"_id": chunk_dict["_id"]},
                                  {"$set": chunk_dict},
                                  upsert=True)
+
+    def find_all_evaluations(self):
+        return list(self.evaluations.find())
