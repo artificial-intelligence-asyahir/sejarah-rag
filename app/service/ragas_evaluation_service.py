@@ -11,29 +11,29 @@ client = AsyncOpenAI(
     base_url="http://localhost:11434/v1"
 )
 
-llm = llm_factory("gemma4", provider="openai", client=client)
+llm = llm_factory("gemma4", provider="openai", client=client, max_tokens=8192)
 
-async def faithfulness_score(answer: dict):
+def faithfulness_score(answer: dict):
     scorer = Faithfulness(llm=llm)
-    result = await scorer.ascore(
+    result = scorer.score(
         user_input=answer['question'],
         response=answer['response'],
         retrieved_contexts=answer['contexts']
     )
     return result.value
 
-async def context_precision_score(answer: dict):
+def context_precision_score(answer: dict):
     scorer = ContextPrecision(llm=llm)
-    result = await scorer.ascore(
+    result = scorer.score(
         user_input=answer['question'],
         reference=answer['ground_truth'],
         retrieved_contexts=answer['contexts']
     )
     return result.value
 
-async def context_recall_score(answer: dict):
+def context_recall_score(answer: dict):
     scorer = ContextRecall(llm=llm)
-    result = await scorer.ascore(
+    result = scorer.score(
         user_input=answer['question'],
         retrieved_contexts=answer['contexts'],
         reference = answer['ground_truth']
@@ -41,10 +41,10 @@ async def context_recall_score(answer: dict):
 
     return result.value
 
-async def response_relevancy_score(answer: dict):
+def response_relevancy_score(answer: dict):
     embeddings = embedding_factory("huggingface", "sentence-transformers/all-MiniLM-L6-v2")
     scorer = AnswerRelevancy(llm=llm, embeddings=embeddings)
-    result = await scorer.ascore(
+    result = scorer.score(
         user_input=answer['question'],
         response=answer['response']
     )
@@ -60,7 +60,7 @@ if __name__ == "__main__":
 
     sample = {
         "question": "Zaman Prasejarah merupakan zaman sebelum manusia mengetahui dan mengenali tulisan. Zaman ini terbahagi kepada dua, iaitu Zaman Batu dan Zaman Logam, Senaraikan tiga tahap Zaman Batu dan terangkan Zaman Batu Tersebut",
-        "grading_notes": """
+        "ground_truth": """
             1.Zaman Paleolitik, 2.Zaman Mesolitik, 3.Zaman Neolitik. 
             ## Zaman Paleolitk 
             - Manusia perlu meneruskan kelangsungan hidup dengan menggunakan teknologi batu yang serba ringkas
@@ -80,5 +80,14 @@ if __name__ == "__main__":
     sample["response"] = response
     sample["references"] = references
 
-    result_relevancy = asyncio.run(response_relevancy_score(sample))
-    print(result_relevancy)
+    result_relevancy = response_relevancy_score(sample)
+    print(f"Relevancy Score: {result_relevancy}")
+
+    result_recall = context_recall_score(sample)
+    print(f"Context Recall Score: {result_recall}")
+
+    result_precision = context_precision_score(sample)
+    print(f"Context Precision Score: {result_precision}")
+
+    result_faithfulness = faithfulness_score(sample)
+    print(f"Faithfulness Score: {result_faithfulness}")

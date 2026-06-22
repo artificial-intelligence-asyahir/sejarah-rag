@@ -1,11 +1,13 @@
 import dataclasses
+
+import numpy as np
 from ollama import chat
 from ollama import ChatResponse
 from qdrant_client.http.models import QueryResponse
-
+from sentence_transformers import CrossEncoder
 
 from app.model.citation import Citation
-from app.model.embeddings import EmbeddingModel
+from app.model.embeddings import EmbeddingModel, CrossEncoderModel
 from app.repository.textbook_repository import TextbookRepository
 from app.repository.vector_repository import VectorRepository
 
@@ -15,6 +17,12 @@ vector_repo = VectorRepository()
 def _retrieve(query: str):
     embeddings = EmbeddingModel().encode(query).tolist()
     search_results: QueryResponse = vector_repo.search_vector(embeddings)
+
+    # reranker = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')
+    # pairs = [[query, point.payload['text']] for point in search_results.points]
+    # scores =  reranker.predict(pairs).tolist()
+    # points_v2 = [search_results.points[i] for i in np.argsort(scores)[-7:]]
+
     results = [point.payload['text'] for point in search_results.points]
     references = [_get_citations(point.payload['book_id'], point.payload['chapter_id'], point.payload['section_id']) for point in search_results.points]
     return results, references

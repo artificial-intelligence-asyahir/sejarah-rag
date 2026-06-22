@@ -18,5 +18,5 @@ class VectorRepository:
         return self.client.query_points(collection_name=COLLECTION_NAME,
                                         query=query,
                                         with_payload=True,
-                                        limit=5)
+                                        limit=7)
 
