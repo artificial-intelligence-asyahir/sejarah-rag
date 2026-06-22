@@ -7,6 +7,7 @@ import dataclasses
 from ollama import chat
 from ollama import ChatResponse
 from qdrant_client.http.models import QueryResponse
+from ragas.metrics.collections import Faithfulness
 
 from app.model.citation import Citation
 from app.model.embeddings import EmbeddingModel
@@ -104,6 +105,23 @@ async def run_experiment(row):
     print(experiment_view)
     return experiment_view
 
+async def test_faithfulness(sample):
+    client = AsyncOpenAI(
+        api_key="ollama",  # Ollama doesn't require a real key
+        base_url="http://localhost:11434/v1"
+    )
+    llm = llm_factory("gemma4", provider="openai", client=client, max_tokens=8192)
+
+    scorer = Faithfulness(llm=llm)
+
+    result = await scorer.ascore(
+        user_input=sample['question'],
+        response=sample['response'],
+        retrieved_contexts=sample['contexts']
+    )
+
+    print(f"Faithfulness Score: {result.value}")
+
 
 if __name__ == "__main__":
     import asyncio
@@ -143,6 +161,7 @@ if __name__ == "__main__":
     dataset.save()
 
     _ = asyncio.run(run_experiment.arun(dataset, name="ragas_evaluation"))
+    _2 = asyncio.run(test_faithfulness(sample))
 
 
     print (sample)
