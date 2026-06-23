@@ -31,12 +31,11 @@ def _rag_query(question: str):
     context, references = _retrieve(question)
 
     prompt = f"""
-    [LANGUAGE CONSTRAINT]
-    All responses should be in Bahasa Melayu.
+    [LANGUAGE]
+    Response in Bahasa Melayu and plain text. 
     
-    [ROLE]
-    Anda merupakan skema jawapan bagi matapelajaran Sejarah di Sekolah Menengah Kebangsaan Malaysia.
-    Sila berikan jawapan yang mudah dibaca dan mudah difahami.
+    [TONE]
+    Academic, objective and concise.
     
     Context:
     {chr(10).join(context)}

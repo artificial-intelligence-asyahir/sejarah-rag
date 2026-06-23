@@ -12,25 +12,46 @@ def llm_answering_step(question: str):
 
 @step
 def evaluate_faithfulness_score(answer: dict, eval: dict):
-    result = faithfulness_score(eval['question'], answer['response'], answer['contexts'])
-    log_metadata(metadata={"faithfulness_score": result})
-    return result
+    try:
+        result = faithfulness_score(eval['question'], answer['response'], answer['contexts'])
+        log_metadata(metadata={"faithfulness_score": result})
+        return result
+    except Exception as e:
+        log_metadata(metadata={"faithfulness_score": "Error"})
+        return -1
+
 
 @step
 def evaluate_context_precision_score(answer: dict, eval: dict):
-    result = context_precision_score(eval['question'], eval['ground_truth'], answer['contexts'])
-    log_metadata(metadata={"context_precision_score": result})
-    return result
+
+    try:
+        result = context_precision_score(eval['question'], eval['ground_truth'], answer['contexts'])
+        log_metadata(metadata={"context_precision_score": result})
+        return result
+    except Exception as e:
+        log_metadata(metadata={"context_precision_score": "Error"})
+        return -1
+
 
 @step
 def evaluate_context_recall_score(answer: dict, eval: dict):
-    result = context_recall_score(eval['question'], eval['ground_truth'], answer['contexts'])
-    log_metadata(metadata={"context_recall_score": result})
-    return result
+    try:
+        result = context_recall_score(eval['question'], eval['ground_truth'], answer['contexts'])
+        log_metadata(metadata={"context_recall_score": result})
+        return result
+    except Exception as e:
+        log_metadata(metadata={"context_recall_score": "Error"})
+        return -1
+
 
 @step
 def evaluate_answer_relevancy_score(answer: dict, eval: dict):
-    result = answer_relevancy_score(eval['question'], answer['response'])
-    log_metadata(metadata={"answer_relevancy_score": result})
-    return result
+    try:
+        result = answer_relevancy_score(eval['question'], answer['response'])
+        log_metadata(metadata={"answer_relevancy_score": result})
+        return result
+    except Exception as e:
+        log_metadata(metadata={"answer_relevancy_score": "Error"})
+        return -1
+
 

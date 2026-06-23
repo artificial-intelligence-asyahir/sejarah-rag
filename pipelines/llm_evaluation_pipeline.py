@@ -1,11 +1,12 @@
 from zenml import pipeline, ExternalArtifact
+from zenml.enums import ExecutionMode
 
 from steps.llm_evaluation_step import llm_answering_step, evaluate_faithfulness_score, evaluate_context_precision_score, \
     evaluate_context_recall_score, evaluate_answer_relevancy_score
 from steps.textbook_repository_step import load_all_evalutions, update_evaluation
 
 
-@pipeline(enable_cache=False)
+@pipeline(enable_cache=False, execution_mode=ExecutionMode.CONTINUE_ON_FAILURE)
 def llm_evaluation_pipeline(eval: dict):
     res = llm_answering_step(eval['question'])
 
