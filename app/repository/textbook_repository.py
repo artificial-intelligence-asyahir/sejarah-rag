@@ -76,6 +76,15 @@ class TextbookRepository:
     def find_all_sections_v2(self) -> list[dict]:
         return list(self.sections.find())
 
+    def find_all_unevaluated(self) -> list[dict]:
+        return list(self.evaluations.find({"evaluated": False}))
+
+    def update_evaluation(self, evaluation: dict):
+        evaluation_id = evaluation["_id"]
+        evaluation.pop("_id", None)
+
+        self.evaluations.update_one({"_id": ObjectId(evaluation_id)}, {"$set": evaluation}, upsert=True)
+
     def save_chunk(self, chunk: Chunk):
         chunk_dict = dataclasses.asdict(chunk)
         chunk_dict["_id"] = ObjectId()
