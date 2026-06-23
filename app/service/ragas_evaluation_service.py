@@ -13,40 +13,40 @@ client = AsyncOpenAI(
 
 llm = llm_factory("gemma4", provider="openai", client=client, max_tokens=8192)
 
-def faithfulness_score(answer: dict):
+def faithfulness_score(question: str, response: str, contexts: list[str]):
     scorer = Faithfulness(llm=llm)
     result = scorer.score(
-        user_input=answer['question'],
-        response=answer['response'],
-        retrieved_contexts=answer['contexts']
+        user_input=question,
+        response=response,
+        retrieved_contexts=contexts
     )
     return result.value
 
-def context_precision_score(answer: dict):
+def context_precision_score(question: str, ground_truth: str, contexts: list[str]):
     scorer = ContextPrecision(llm=llm)
     result = scorer.score(
-        user_input=answer['question'],
-        reference=answer['ground_truth'],
-        retrieved_contexts=answer['contexts']
+        user_input=question,
+        reference=ground_truth,
+        retrieved_contexts=contexts
     )
     return result.value
 
-def context_recall_score(answer: dict):
+def context_recall_score(question: str, ground_truth: str, contexts: list[str]):
     scorer = ContextRecall(llm=llm)
     result = scorer.score(
-        user_input=answer['question'],
-        retrieved_contexts=answer['contexts'],
-        reference = answer['ground_truth']
+        user_input=question,
+        retrieved_contexts=contexts,
+        reference = ground_truth
     )
 
     return result.value
 
-def response_relevancy_score(answer: dict):
+def answer_relevancy_score(question: str, response: str):
     embeddings = embedding_factory("huggingface", "sentence-transformers/all-MiniLM-L6-v2")
     scorer = AnswerRelevancy(llm=llm, embeddings=embeddings)
     result = scorer.score(
-        user_input=answer['question'],
-        response=answer['response']
+        user_input=question,
+        response=response
     )
 
     return result.value
@@ -80,14 +80,14 @@ if __name__ == "__main__":
     sample["response"] = response
     sample["references"] = references
 
-    result_relevancy = response_relevancy_score(sample)
-    print(f"Relevancy Score: {result_relevancy}")
-
-    result_recall = context_recall_score(sample)
-    print(f"Context Recall Score: {result_recall}")
-
-    result_precision = context_precision_score(sample)
-    print(f"Context Precision Score: {result_precision}")
-
-    result_faithfulness = faithfulness_score(sample)
-    print(f"Faithfulness Score: {result_faithfulness}")
+    # result_relevancy = response_relevancy_score(sample)
+    # print(f"Relevancy Score: {result_relevancy}")
+    #
+    # result_recall = context_recall_score(sample)
+    # print(f"Context Recall Score: {result_recall}")
+    #
+    # result_precision = context_precision_score(sample)
+    # print(f"Context Precision Score: {result_precision}")
+    #
+    # result_faithfulness = faithfulness_score(sample)
+    # print(f"Faithfulness Score: {result_faithfulness}")

@@ -68,6 +68,29 @@ def load_all_sections() -> list[dict]:
 
     return sections
 
+def load_all_evalutions() -> list[dict]:
+    evaluations = textbook_repo.find_all_unevaluated()
+    for eval in evaluations:
+        eval['_id'] = str(eval['_id'])
+        eval['chapter_id'] = str(eval['chapter_id'])
+
+    return evaluations
+
+@step
+def update_evaluation(eval: dict, res: dict, faithfulness: float, precision: float, recall: float, relevancy: float):
+    eval['response'] = res['response']
+    eval['contexts'] = res['contexts']
+    eval['references'] = res['references']
+    eval['evaluated'] = True
+    eval['faithfulness'] = faithfulness
+    eval['context_precision'] = precision
+    eval['context_recall'] = recall
+    eval['answer_relevancy'] = relevancy
+    log_metadata(metadata={"evaluation_id": str(eval['_id'])})
+    textbook_repo.update_evaluation(eval)
+
+
+
 @step
 def save_vector_embedding(points: list[PointStruct]):
     vector_repo = VectorRepository()

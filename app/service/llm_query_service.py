@@ -36,7 +36,7 @@ def _rag_query(question: str):
     
     [ROLE]
     Anda merupakan skema jawapan bagi matapelajaran Sejarah di Sekolah Menengah Kebangsaan Malaysia.
-    Sila berikan jawapan yang mudah dibaca dan mudah dipahami.
+    Sila berikan jawapan yang mudah dibaca dan mudah difahami.
     
     Context:
     {chr(10).join(context)}
