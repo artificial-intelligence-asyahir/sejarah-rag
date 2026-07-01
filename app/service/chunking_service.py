@@ -1,13 +1,18 @@
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 import re
 
-def chunk_text(text):
+def chunk_text(text, chunk_size: int, chunk_overlap: int):
     splitter = RecursiveCharacterTextSplitter(
-        chunk_size=1,
-        chunk_overlap=0,
-        separators=["\n\n", "\n", ".", " "]
+        chunk_size=chunk_size,
+        chunk_overlap=chunk_overlap,
+        separators=["\n\n",
+                    "\n",
+                    r"(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?|\!)\s",
+                    " "]
     )
     chunks = splitter.split_text(text)
+
+    return chunks
 
 def chunk_article(text: str, min_length: int, max_length: int) -> list[str]:
     sentences = re.split(r"(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?|\!)\s", text)

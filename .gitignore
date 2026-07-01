@@ -216,4 +216,4 @@ __marimo__/
 
 # Exclude textbook folder 
 /source
-
+env-var.txt

@@ -1,7 +1,9 @@
+import os
+
 from pymongo import MongoClient
 
-URI = "mongodb://asyahir:password@localhost:27017"
-DATABASE_NAME = "sejarah_db"
+URI = os.getenv("MONGO_URI")
+DATABASE_NAME = os.getenv("MONGO_DB_NAME")
 
 class MongoDatabaseConnector:
     _instance: MongoClient | None = None

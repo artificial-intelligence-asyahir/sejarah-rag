@@ -1,8 +1,10 @@
+import os
+
 from sentence_transformers import SentenceTransformer
 from app.model.base import SingletonMeta
 from huggingface_hub import login
 
-login(token="")
+login(token=os.getenv("HF_TOKEN"))
 
 class EmbeddingModel(metaclass=SingletonMeta):
     def __init__(self):

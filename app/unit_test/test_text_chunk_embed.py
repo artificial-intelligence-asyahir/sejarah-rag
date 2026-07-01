@@ -19,6 +19,9 @@ class TestTextChunkEmbed(unittest.TestCase):
         chunks1 = chunk_article(section.content, 1, 200)
         print(chunks1)
 
+        chunks2 = chunk_text(section.content, 200, 50)
+        print(chunks2)
+
         model = EmbeddingModel()
         embedding = model.encode(chunks1)
         embedding = embedding.tolist()
@@ -37,7 +40,7 @@ class TestTextChunkEmbed(unittest.TestCase):
 
     def _find_section_from_unittest(self) -> Section:
         textbook_repo = TextbookRepository()
-        section = textbook_repo.find_section_by_id('6a0dd06bc923557f95b2a76f')
+        section = textbook_repo.find_section_by_id('6a2786d697e4a8586cf3b0c1')
         print(section)
         return section
 
